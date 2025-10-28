@@ -38,11 +38,11 @@ path.rotation.z = Math.PI / 4;
 scene.add(path);
 
 // New road between Building 1 and Building 2
-const roadBetweenGeo = new THREE.PlaneGeometry(20, 2); // Adjusted width and length
+const roadBetweenGeo = new THREE.PlaneGeometry(23, 2);
 const roadBetween = new THREE.Mesh(roadBetweenGeo, pathMat);
 roadBetween.rotation.x = -Math.PI / 2;
-roadBetween.rotation.z = -3.1;
-roadBetween.position.set(10, 0.01, 2.5); // Centered between [-12, 1] and [-1, 10]
+roadBetween.rotation.z = -4.5;
+roadBetween.position.set(5, 0.01, 8.5);
 scene.add(roadBetween);
 
 const buildingMat1 = new THREE.MeshPhongMaterial({ color: 0x9bbad3 });
@@ -52,17 +52,17 @@ function createBuilding(mat, pos, rotationY = Math.PI / 4) {
   const geo = new THREE.BoxGeometry(9, 3, 4);
   const mesh = new THREE.Mesh(geo, mat);
   mesh.position.set(...pos);
-  mesh.rotation.y = rotationY; // Ensure this is set correctly
+  mesh.rotation.y = rotationY;
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   scene.add(mesh);
   return mesh;
 }
 
-// calls
+// Buildings
 createBuilding(buildingMat1, [-9, 1.5, 1]); // left
-createBuilding(buildingMat2, [2, 1.5, 10], 0); // middle vertical (explicitly set to 0)
-createBuilding(buildingMat1, [10, 1.5, -2]); // right
+createBuilding(buildingMat2, [0.5, 1.5, 15], 2); // middle vertical
+createBuilding(buildingMat1, [13, 1.5, 1]); // right
 
 // Ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -79,6 +79,7 @@ const pointLight = new THREE.PointLight(0xfff2b0, 0.5);
 pointLight.position.set(0, 3, 0);
 scene.add(pointLight);
 
+// --- Trees ---
 function createTree(x, z) {
   const trunkGeo = new THREE.CylinderGeometry(0.1, 0.1, 1);
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
@@ -93,10 +94,37 @@ function createTree(x, z) {
   scene.add(trunk, leaves);
 }
 
-createTree(-3, 0);
-createTree(2, 3);
-createTree(5, -2);
-createTree(-7, -4);
+// Bigger tree generator
+function createBigTree(x, z, scale = 1.6) {
+  const trunkGeo = new THREE.CylinderGeometry(
+    0.15 * scale,
+    0.2 * scale,
+    1.5 * scale
+  );
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+  const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+  trunk.position.set(x, 0.75 * scale, z);
+
+  const leavesGeo = new THREE.SphereGeometry(1.2 * scale, 16, 16);
+  const leavesMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32 });
+  const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+  leaves.position.set(x, 1.7 * scale, z);
+
+  scene.add(trunk, leaves);
+}
+
+// Small trees
+createTree(-2, 6);
+createTree(6, -2);
+createTree(8, -4);
+createTree(10, -6);
+createTree(12, -8);
+createTree(-4, 8);
+createTree(5, -0.1);
+
+// Big trees
+createBigTree(2, 5);
+createBigTree(7, 5);
 
 // Move all objects 3 units towards -x axis
 scene.traverse((object) => {
